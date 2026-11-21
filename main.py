@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""VELMARA — Isles of the Amber Tide.
+"""THALMARA — Isles of the Amber Tide.
 
 A travel poster for a place that does not exist. Pure-stdlib Python 3.13:
 draws a 1024x1024 PNG (dusk lagoon, one crystal spire, big invented
@@ -331,7 +331,7 @@ def draw_scene(cv, rng):
                      (bx0 + s, by0)], 3, (20, 16, 46))
 
     # --- typography: name + subtitle (on top, legible)
-    name = "VELMARA"
+    name = "THALMARA"
     cap_h = 112
     nw = text_width(name, cap_h)
     nx = (W - nw) / 2.0

@@ -1,4 +1,4 @@
-# VELMARA — Isles of the Amber Tide
+# THALMARA — Isles of the Amber Tide
 
 A travel poster for a place that isn't there. A lagoon archipelago where a
 single colossal crystal spire — the Tideglass Spire — rises out of still
@@ -18,7 +18,7 @@ water and catches the last amber light of a dusk that never quite ends.
   shimmering back up the water in a long reflection column, a small
   lantern boat, a dark headland with lit windows, birds crossing a violet
   dusk sky.
-- **The name, set with intent:** VELMARA in large bold geometric
+- **The name, set with intent:** THALMARA in large bold geometric
   letterforms across the top, with the subtitle ISLES OF THE AMBER TIDE
   beneath it — the eye travels from the name to the spire to the horizon.
 
