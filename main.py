@@ -218,7 +218,7 @@ def draw_scene(cv, rng):
     cv.vgrad(0, HORIZON, SKY)
 
     # --- stars, upper sky only
-    for _ in range(70):
+    for _ in range(130):
         x = rng.randint(0, W - 1)
         y = rng.randint(0, 300)
         a = rng.random()
@@ -228,13 +228,19 @@ def draw_scene(cv, rng):
         if a > 0.75:
             cv.px(x + 1, y, star)
 
-    # --- soft high cloud bands
+    # --- soft high cloud bands (layered for volume)
     for (cx, cy, rx, ry, tint) in [
             (300, 268, 260, 16, (107, 74, 138)),
             (760, 300, 300, 14, (122, 82, 128)),
-            (520, 210, 200, 10, (90, 62, 128))]:
+            (520, 210, 200, 10, (90, 62, 128)),
+            (180, 330, 220, 12, (140, 90, 130)),
+            (880, 240, 180, 10, (110, 70, 130))]:
         base = sky_at(cy)
         cv.ellipse(cx, cy, rx, ry, mix(base, tint, 0.35))
+    # wispy high cloud streaks
+    for (cx, cy, rx) in [(240, 150, 150), (700, 120, 170), (500, 90, 120)]:
+        base = sky_at(cy)
+        cv.ellipse(cx, cy, rx, 5, mix(base, (190, 150, 190), 0.30))
 
     # --- sun glow + disc (low, right of centre)
     sun_cx, sun_cy, sun_r = 665, 462, 80
@@ -243,6 +249,13 @@ def draw_scene(cv, rng):
         cv.circle(sun_cx, sun_cy, rr,
                   mix(sky_at(sun_cy), (255, 196, 107), mix_t))
     cv.circle(sun_cx, sun_cy, sun_r, (255, 233, 168))
+
+    # --- distant hazy headlands on the horizon
+    haze = (139, 96, 128)
+    cv.poly([(0, HORIZON), (0, 588), (90, 576), (190, 594), (265, HORIZON)],
+            haze)
+    cv.poly([(W, HORIZON), (W, 582), (940, 574), (862, 592), (820, HORIZON)],
+            haze)
 
     # --- sea
     cv.vgrad(HORIZON, H, SEA)
@@ -289,6 +302,9 @@ def draw_scene(cv, rng):
         wxx = (lx + rx) // 2
         cv.hspan(wy, wxx - 7, wxx + 7, (255, 220, 130))
         cv.hspan(wy + 1, wxx - 7, wxx + 7, (255, 220, 130))
+    # mist at the base of the spire
+    cv.ellipse(415, 614, 95, 9, mix(sea_at(624), (191, 232, 224), 0.35))
+    cv.ellipse(415, 622, 60, 6, mix(sea_at(626), (191, 232, 224), 0.28))
 
     # --- spire reflection (squashed, wavy slices)
     for k in range(30):
@@ -300,12 +316,49 @@ def draw_scene(cv, rng):
         cv.hspan(y, cx - spread, cx + spread, col)
 
     # --- gentle swell lines across the sea
-    for _ in range(26):
+    for _ in range(34):
         y = rng.randint(HORIZON + 30, H - 20)
         x = rng.randint(0, W - 260)
         ln = rng.randint(60, 220)
         col = mix(sea_at(y), (150, 170, 210), 0.22)
         cv.hspan(y, x, x + ln, col)
+
+    # --- mist drifting over the water near the horizon
+    cv.ellipse(512, 632, 480, 6, mix(sea_at(632), (246, 169, 75), 0.14))
+    cv.ellipse(300, 646, 260, 5, mix(sea_at(646), (246, 169, 75), 0.12))
+    cv.ellipse(760, 640, 220, 5, mix(sea_at(640), (255, 196, 107), 0.12))
+
+    # --- a second, larger sailboat with a lantern, mid-right
+    bx2, by2 = 838, 812
+    cv.poly([(bx2 - 44, by2), (bx2 + 44, by2), (bx2 + 28, by2 + 20),
+             (bx2 - 28, by2 + 20)], (20, 16, 46))
+    cv.thick_line(bx2, by2, bx2, by2 - 66, 5, (20, 16, 46))
+    cv.poly([(bx2, by2 - 64), (bx2 + 34, by2 - 10), (bx2, by2 - 10)],
+            (255, 242, 206))
+    cv.poly([(bx2 - 4, by2 - 58), (bx2 - 26, by2 - 12), (bx2 - 4, by2 - 12)],
+            (232, 214, 170))
+    cv.circle(bx2, by2 - 72, 15, mix(sea_at(by2), (255, 196, 107), 0.5))
+    cv.circle(bx2, by2 - 72, 7, (255, 214, 140))
+    for k in range(5):
+        yy = by2 + 24 + k * 6
+        cv.hspan(yy, bx2 - 8, bx2 + 8, mix(sea_at(yy), (255, 196, 107), 0.4))
+
+    # --- floating lanterns on the water (tiny lights + streaks)
+    for (lx, ly) in [(180, 700), (300, 780), (560, 860), (660, 740),
+                     (940, 880)]:
+        cv.circle(lx, ly, 7, mix(sea_at(ly), (255, 196, 107), 0.45))
+        cv.circle(lx, ly, 3, (255, 214, 140))
+        for k in range(4):
+            yy = ly + 4 + k * 4
+            cv.hspan(yy, lx - 2, lx + 2,
+                     mix(sea_at(yy), (255, 196, 107), 0.35))
+
+    # --- dark rocks + reeds, bottom-right foreground
+    cv.poly([(W, H), (W, 936), (952, 908), (884, 942), (902, H)],
+            (20, 16, 46))
+    for (rx0, ry0, rx1, ry1) in [(930, 940, 922, 880), (950, 946, 952, 884),
+                                 (968, 942, 976, 890)]:
+        cv.thick_line(rx0, ry0, rx1, ry1, 3, (26, 22, 58))
 
     # --- dark headland, bottom-left, with lit windows
     cv.poly([(0, H), (0, 872), (110, 812), (250, 848), (330, 905),
@@ -330,6 +383,16 @@ def draw_scene(cv, rng):
         cv.polyline([(bx0 - s, by0), (bx0, by0 + s // 2),
                      (bx0 + s, by0)], 3, (20, 16, 46))
 
+    # --- film grain over the whole poster (seeded, subtle)
+    for _ in range(30000):
+        gx = rng.randint(0, W - 1)
+        gy = rng.randint(0, H - 1)
+        o = (gy * W + gx) * 3
+        d = rng.randint(-11, 11)
+        for c in range(3):
+            v = cv.buf[o + c] + d
+            cv.buf[o + c] = 0 if v < 0 else (255 if v > 255 else v)
+
     # --- typography: name + subtitle (on top, legible)
     name = "THALMARA"
     cap_h = 112
@@ -344,6 +407,21 @@ def draw_scene(cv, rng):
     sx = (W - sw) / 2.0
     draw_text(cv, sub, sx + 1, 208 + 2, sub_h, 6, SHADOW, advance_units=7.4)
     draw_text(cv, sub, sx, 208, sub_h, 6, CREAM, advance_units=7.4)
+
+    # --- vintage print frame: cream border + thin inner rule
+    frame = (242, 230, 200)
+    for y in range(0, 14):
+        cv.hspan(y, 0, W - 1, frame)
+        cv.hspan(H - 1 - y, 0, W - 1, frame)
+    for y in range(0, H):
+        cv.hspan(y, 0, 13, frame)
+        cv.hspan(y, W - 14, W - 1, frame)
+    rule = (32, 26, 58)
+    for y in (18, 19, H - 20, H - 19):
+        cv.hspan(y, 18, W - 19, rule)
+    for y in range(18, H - 18):
+        cv.hspan(y, 18, 19, rule)
+        cv.hspan(y, W - 20, W - 19, rule)
 
 
 def main(argv):
